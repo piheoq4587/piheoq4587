@@ -1,0 +1,157 @@
+{
+  "_comment": "Central LLM routing config. All Skills/MCPs/programs should read this via llm_router.py. Source: LLM_PROXY_MODEL_ROUTING_PORTING_GUIDE_2026-05-06.md",
+  "_last_updated": "2026-05-07-grok-first-after-availability-test",
+  "endpoint": {
+    "_comment": "Endpoint URL and API key are read from environment variables loaded from ~/.claude/config/api-credentials.env",
+    "base_url_env": "OPENAI_API_BASE",
+    "api_key_env": "OPENAI_API_KEY",
+    "default_base_url": "https://tone.nyc.mn/v1"
+  },
+  "models": {
+    "claude-opus-4.7-n": {
+      "supports_tools": false,
+      "needs_fewshot": true,
+      "max_prompt_kb": 50,
+      "notes": "Primary non-tool model. Use few-shot wrapper. Best default quality."
+    },
+    "gpt-5.5-n": {
+      "supports_tools": false,
+      "needs_fewshot": false,
+      "max_prompt_kb": 200,
+      "notes": "Active complement and fallback for synthesis/JSON. Use suffix -n."
+    },
+    "gemini-3.1-pro-n": {
+      "supports_tools": false,
+      "needs_fewshot": false,
+      "max_prompt_kb": 100,
+      "needs_direct_answer_guard": true,
+      "notes": "Cross-check and diversity model; use direct-answer guard."
+    },
+    "claude-opus-4.6-n": {
+      "supports_tools": false,
+      "needs_fewshot": true,
+      "max_prompt_kb": 50,
+      "notes": "Later Opus fallback. Use few-shot wrapper."
+    },
+    "grok-4.20-0309-non-reasoning": {
+      "supports_tools": true,
+      "needs_fewshot": false,
+      "max_prompt_kb": 200,
+      "notes": "Primary OpenAI-compatible tool/function-calling model."
+    },
+    "grok-4.20-0309-reasoning": {
+      "supports_tools": true,
+      "needs_fewshot": false,
+      "max_prompt_kb": 200,
+      "notes": "Tool-call fallback and reasoning fallback."
+    },
+    "claude-sonnet-4.6-n": {
+      "supports_tools": false,
+      "needs_fewshot": true,
+      "max_prompt_kb": 50,
+      "notes": "Emergency-only fallback by user preference."
+    },
+    "gpt-5.5": {
+      "supports_tools": false,
+      "needs_fewshot": false,
+      "max_prompt_kb": 0,
+      "disabled": true,
+      "notes": "Disabled. Source proxy returns HTTP 502 for no-suffix alias. Use gpt-5.5-n."
+    },
+    "gpt-5.4": {
+      "supports_tools": false,
+      "needs_fewshot": false,
+      "max_prompt_kb": 0,
+      "disabled": true,
+      "notes": "Disabled until target proxy test proves no-suffix alias works."
+    },
+    "gpt-5.4-mini": {
+      "supports_tools": false,
+      "needs_fewshot": false,
+      "max_prompt_kb": 0,
+      "disabled": true,
+      "notes": "Disabled until target proxy test proves no-suffix alias works."
+    },
+    "gpt-5.2": {
+      "supports_tools": false,
+      "needs_fewshot": false,
+      "max_prompt_kb": 0,
+      "disabled": true,
+      "notes": "Disabled until target proxy test proves no-suffix alias works."
+    }
+  },
+  "roles": {
+    "_comment": "Callers should use ROLE NAMES, not model names directly. Each role lists models in fallback order (head = primary, rest = fallback). Cooldown logic moves cooled models to tail at runtime. Disabled models are skipped automatically.",
+    "default": [
+      "grok-4.20-0309-non-reasoning",
+      "grok-4.20-0309-reasoning",
+      "claude-opus-4.7-n",
+      "gpt-5.5-n",
+      "gemini-3.1-pro-n",
+      "claude-opus-4.6-n"
+    ],
+    "tool_capable": [
+      "grok-4.20-0309-non-reasoning",
+      "grok-4.20-0309-reasoning"
+    ],
+    "synthesis": [
+      "grok-4.20-0309-non-reasoning",
+      "grok-4.20-0309-reasoning",
+      "claude-opus-4.7-n",
+      "gpt-5.5-n",
+      "gemini-3.1-pro-n",
+      "claude-opus-4.6-n"
+    ],
+    "fast_cheap": [
+      "grok-4.20-0309-non-reasoning",
+      "grok-4.20-0309-reasoning",
+      "gpt-5.5-n",
+      "gemini-3.1-pro-n"
+    ],
+    "deep_reasoning_small": [
+      "grok-4.20-0309-non-reasoning",
+      "grok-4.20-0309-reasoning",
+      "claude-opus-4.7-n",
+      "gpt-5.5-n",
+      "gemini-3.1-pro-n",
+      "claude-opus-4.6-n"
+    ],
+    "stable_json": [
+      "grok-4.20-0309-non-reasoning",
+      "grok-4.20-0309-reasoning",
+      "claude-opus-4.7-n",
+      "gpt-5.5-n",
+      "gemini-3.1-pro-n",
+      "claude-opus-4.6-n"
+    ],
+    "cross_check": [
+      "grok-4.20-0309-non-reasoning",
+      "grok-4.20-0309-reasoning",
+      "gpt-5.5-n",
+      "gemini-3.1-pro-n",
+      "claude-opus-4.6-n"
+    ],
+    "lead_synthesis": [
+      "grok-4.20-0309-non-reasoning",
+      "grok-4.20-0309-reasoning",
+      "claude-opus-4.7-n",
+      "gpt-5.5-n",
+      "gemini-3.1-pro-n",
+      "claude-opus-4.6-n"
+    ],
+    "emergency_sonnet": [
+      "grok-4.20-0309-non-reasoning",
+      "grok-4.20-0309-reasoning",
+      "claude-sonnet-4.6-n",
+      "gpt-5.5-n"
+    ]
+  },
+  "policies": {
+    "cooldown_ttl_seconds": 900,
+    "request_timeout_seconds": 120,
+    "max_retries_per_model": 1,
+    "agent_timeout_base_seconds": 600,
+    "agent_timeout_max_seconds": 1800,
+    "last_availability_test": "2026-05-07: only grok-4.20-0309 non-reasoning/reasoning returned OK within 20s; GPT/Gemini/Claude active models timed out; disabled GPT aliases returned HTTP 502."
+  }
+}

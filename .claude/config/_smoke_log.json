@@ -1,0 +1,14 @@
+[
+  {
+    "test": "default",
+    "status": "PASS",
+    "len": 2,
+    "snippet": "OK"
+  },
+  {
+    "test": "synthesis",
+    "status": "PASS",
+    "len": 108,
+    "snippet": "JSON is a lightweight, text-based data format using key-value pairs and arrays f"
+  }
+]

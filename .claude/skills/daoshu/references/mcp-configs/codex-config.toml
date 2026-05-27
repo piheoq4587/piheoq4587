@@ -1,0 +1,253 @@
+model = "gpt-5.5"
+model_reasoning_effort = "xhigh"
+
+[features]
+memories = true
+js_repl = false
+
+[marketplaces.openai-bundled]
+last_updated = "2026-05-26T00:30:12Z"
+source_type = "local"
+source = '\\?\C:\Users\Administrator\.codex\.tmp\bundled-marketplaces\openai-bundled'
+
+[marketplaces.openai-primary-runtime]
+last_updated = "2026-05-24T23:30:56Z"
+source_type = "local"
+source = '\\?\C:\Users\Administrator\.cache\codex-runtimes\codex-primary-runtime\plugins\openai-primary-runtime'
+
+[mcp_servers.agentmemory]
+command = "agentmemory"
+args = ["mcp"]
+
+[mcp_servers.firecrawl]
+command = 'C:\Users\Administrator\.claude\scripts\firecrawl-mcp-wrapper.cmd'
+
+[mcp_servers.infranodus]
+command = 'C:\Users\Administrator\.claude\scripts\infranodus-mcp-wrapper.cmd'
+
+[mcp_servers.scite]
+command = 'C:\Users\Administrator\.claude\scripts\scite-mcp-wrapper.cmd'
+args = ["-y", "mcp-remote", "https://api.scite.ai/mcp"]
+
+[mcp_servers.tooluniverse]
+command = "uvx"
+args = ["tooluniverse"]
+
+[mcp_servers.tooluniverse.env]
+AGENTIC_TOOL_FALLBACK_CHAIN = '[{"api_type":"OPENROUTER","model_id":"openai/gpt-5"}]'
+NCBI_API_KEY = "63968fcdca72bd2511d5f3613c9322434908"
+OPENAI_API_BASE = "https://tone.nyc.mn/v1"
+OPENAI_API_KEY = "sk-sJ5G8N7pN0c503Y0KPB1nmj7ZeymZP57FNUjNIUSJyyuhFXI"
+OPENAI_BASE_URL = "https://tone.nyc.mn/v1"
+PYTHONIOENCODING = "utf-8"
+SEMANTIC_SCHOLAR_API_KEY = "2sEXmsn5Ua5VoTjRL9hiy7p6Otca7KKI3ENHUKeP"
+SERPBASE_API_KEY = "sk-51530814747766d33d87a27921c3aa60104bcc42c8a33145"
+SERPBASE_API_KEY_2 = "sk-058a03695d8147d8887465973f90feb0a4604f746fafdf8f"
+SERPBASE_BASE_URL = "https://api.serpbase.dev"
+TOOLUNIVERSE_LLM_CONFIG_MODE = "env_override"
+TOOLUNIVERSE_LLM_DEFAULT_PROVIDER = "OPENROUTER"
+TOOLUNIVERSE_LLM_MODEL_DEFAULT = "openai/gpt-5"
+TOOLUNIVERSE_LLM_TEMPERATURE = "0.2"
+
+[mcp_servers.tooluniverse-cell]
+command = "wsl.exe"
+args = ["/home/dengwei/.local/bin/tooluniverse-smcp-stdio", "--categories", "cellosaurus", "cbioportal"]
+
+[mcp_servers.tooluniverse-disease]
+command = "wsl.exe"
+args = ["/home/dengwei/.local/bin/tooluniverse-smcp-stdio", "--categories", "opentarget", "disease_target_score", "monarch", "clinical_trials", "EFO", "gwas", "clinvar"]
+
+[mcp_servers.tooluniverse-drug]
+command = "wsl.exe"
+args = ["/home/dengwei/.local/bin/tooluniverse-smcp-stdio", "--categories", "fda_drug_label", "fda_drug_adverse_event", "dailymed", "ChEMBL", "pubchem", "admetai"]
+
+[mcp_servers.tooluniverse-gene]
+command = "wsl.exe"
+args = ["/home/dengwei/.local/bin/tooluniverse-smcp-stdio", "--categories", "uniprot", "go", "Enrichr", "HumanBase", "hpa", "ensembl", "dbsnp", "gnomad"]
+
+[mcp_servers.tooluniverse-genomics]
+command = "wsl.exe"
+args = ["/home/dengwei/.local/bin/tooluniverse-smcp-stdio", "--categories", "blast", "encode", "geo", "gdc", "jaspar", "regulomedb"]
+
+[mcp_servers.tooluniverse-health]
+command = "wsl.exe"
+args = ["/home/dengwei/.local/bin/tooluniverse-smcp-stdio", "--categories", "medlineplus", "guidelines", "odphp"]
+
+[mcp_servers.tooluniverse-literature]
+command = "wsl.exe"
+args = ["/home/dengwei/.local/bin/tooluniverse-smcp-stdio", "--categories", "pubmed", "EuropePMC", "semantic_scholar", "arxiv", "biorxiv", "medrxiv", "pmc"]
+
+[mcp_servers.tooluniverse-ontology]
+command = "wsl.exe"
+args = ["/home/dengwei/.local/bin/tooluniverse-smcp-stdio", "--categories", "ols", "wikidata_sparql", "pubtator", "idmap"]
+
+[mcp_servers.tooluniverse-pathway]
+command = "wsl.exe"
+args = ["/home/dengwei/.local/bin/tooluniverse-smcp-stdio", "--categories", "reactome", "kegg", "wikipathways"]
+
+[mcp_servers.tooluniverse-structure]
+command = "wsl.exe"
+args = ["/home/dengwei/.local/bin/tooluniverse-smcp-stdio", "--categories", "rcsb_pdb", "rcsb_search", "alphafold", "visualization_protein_3d"]
+
+[mcp_servers.tooluniverse-utility]
+command = "wsl.exe"
+args = ["/home/dengwei/.local/bin/tooluniverse-smcp-stdio", "--categories", "tool_finder", "web_search_tools", "url", "compose", "python_executor"]
+
+[mcp_servers.gitnexus]
+command = 'C:\Users\Administrator\.claude\scripts\gitnexus-mcp-wrapper.cmd'
+args = ["mcp"]
+
+[plugins."biorender@openai-curated"]
+enabled = true
+
+[plugins."browser-use@openai-bundled"]
+enabled = true
+
+[plugins."build-web-apps@openai-curated"]
+enabled = true
+
+[plugins."canva@openai-curated"]
+enabled = true
+
+[plugins."cube@openai-curated"]
+enabled = true
+
+[plugins."daloopa@openai-curated"]
+enabled = true
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."github@openai-curated"]
+enabled = true
+
+[plugins."gmail@openai-curated"]
+enabled = true
+
+[plugins."google-calendar@openai-curated"]
+enabled = true
+
+[plugins."google-drive@openai-curated"]
+enabled = true
+
+[plugins."latex-tectonic@openai-bundled"]
+enabled = true
+
+[plugins."life-science-research@openai-curated"]
+enabled = true
+
+[plugins."mem@openai-curated"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[plugins."readwise@openai-curated"]
+enabled = true
+
+[plugins."scite@openai-curated"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."superpowers@openai-curated"]
+enabled = true
+
+[plugins."chrome@openai-bundled"]
+enabled = true
+
+[plugins."plugin-eval@openai-curated"]
+enabled = true
+
+[projects.'C:\Users\Administrator']
+trust_level = "trusted"
+
+[projects.'D:\123pan\研究所\转编制']
+trust_level = "trusted"
+
+[projects.'D:\OneDrive\OneDrive - 365\文档\Cline']
+trust_level = "trusted"
+
+[projects.'d:\123pan\国自然\写文章思路\研究基础']
+trust_level = "trusted"
+
+[projects.'d:\123pan\国自然\写文章思路\codex']
+trust_level = "trusted"
+
+[projects.'d:\123pan\国自然\写文章思路\网络药理学']
+trust_level = "trusted"
+
+[projects.'d:\123pan\国自然\写文章思路\宏基因组']
+trust_level = "trusted"
+
+[projects.'d:\123pan\国自然\写文章思路\单细胞组']
+trust_level = "trusted"
+
+[projects.'d:\123pan\国自然\写文章思路\分析结果汇总']
+trust_level = "trusted"
+
+[projects.'c:\users\administrator\.nvm']
+trust_level = "trusted"
+
+[projects.'c:\users\administrator\onedrive\备份skill及道智']
+trust_level = "trusted"
+
+[mcp_servers.prompts-chat]
+url = "https://prompts.chat/api/mcp"
+
+[shell_environment_policy]
+inherit = "core"
+
+[shell_environment_policy.set]
+SERPBASE_API_KEY = "sk-51530814747766d33d87a27921c3aa60104bcc42c8a33145"
+SERPBASE_API_KEY_2 = "sk-058a03695d8147d8887465973f90feb0a4604f746fafdf8f"
+SERPBASE_BASE_URL = "https://api.serpbase.dev"
+
+[tui.model_availability_nux]
+"gpt-5.5" = 1
+
+[windows]
+sandbox = "unelevated"
+
+[hooks.state]
+
+[hooks.state.'C:\Users\Administrator\.codex\hooks.json:post_tool_use:0:0']
+trusted_hash = "sha256:a8ba3209d18ebe6d67fec16951cfe2610a6f43695b3476aa6427d00beb8f2c5c"
+
+[hooks.state.'C:\Users\Administrator\.codex\hooks.json:pre_tool_use:0:0']
+trusted_hash = "sha256:01fa3f113347c6b591feda254bd3bf113c62bda6978c1c5bd4e9d6e9a37b4214"
+
+[desktop]
+git-show-sidebar-pr-icons = true
+
+[desktop.open-in-target-preferences]
+global = "cursor"
+
+[desktop.open-in-target-preferences.perPath]
+'D:\OneDrive\OneDrive - 365\文档\Cline' = "cursor"
+
+[mcp_servers.chrome-devtools]
+command = 'C:\Users\Administrator\.claude\scripts\chrome-devtools-mcp-wrapper.cmd'
+args = ["--headless", "--isolated", "--no-usage-statistics"]
+
+[mcp_servers.node_repl]
+args = []
+command = 'C:\Users\Administrator\AppData\Local\OpenAI\Codex\bin\3c238e29bbc930ff\node_repl.exe'
+startup_timeout_sec = 120
+
+[mcp_servers.node_repl.env]
+BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
+BROWSER_USE_MARKETPLACE_NAME = "openai-bundled"
+CODEX_CLI_PATH = 'C:\Users\Administrator\AppData\Local\OpenAI\Codex\bin\3f4fb8cdd344abc7\codex.exe'
+CODEX_HOME = 'C:\Users\Administrator\.codex'
+NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS = "1000"
+NODE_REPL_NODE_MODULE_DIRS = ""
+NODE_REPL_NODE_PATH = 'C:\Users\Administrator\AppData\Local\OpenAI\Codex\bin\5b9024f90663758b\node.exe'
+NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "167fdf579477181fba1773c1efb067b00c5a64fe85dafb50a2001bde198dc739"
+NODE_REPL_TRUSTED_CODE_PATHS = 'C:\Users\Administrator\.codex'
+NODE_REPL_UNTRUSTED_ENV_ALLOWLIST = "BROWSER_USE_MARKETPLACE_NAME"
+
+[mcp_servers.gbrain]
+command = "gbrain"
+args = ["serve"]

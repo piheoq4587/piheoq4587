@@ -1,0 +1,120 @@
+{
+  "version": "1.0",
+  "description": "Pre-defined multi-skill pipelines. Each pipeline has steps; each step is a skill or sub-chain.",
+  "pipelines": {
+    "tim-submission": {
+      "label": "TIM 期刊投稿全流程",
+      "trigger_phrases": ["TIM 投稿", "TIM 期刊", "整理 TIM 稿", "龙华期刊", "Translational Integrative Medicine"],
+      "mode": "pipeline",
+      "steps": [
+        {"role": "立题", "skills": ["cs-research-ideation", "research-proposal"], "select": "menu"},
+        {"role": "数据分析", "skills": ["empirical-analysis-r", "empirical-analysis-python"], "select": "menu-by-language"},
+        {"role": "草稿", "skills": ["manuscript", "cs-ml-paper-writing"], "select": "menu"},
+        {"role": "图表", "skills": ["cs-publication-chart-skill", "scientific-visualization", "scientific-schematics"], "select": "parallel-compare"},
+        {"role": "引用核查", "skills": ["cs-citation-verification", "citation-form-check"], "select": "single"},
+        {"role": "自审", "skills": ["cs-paper-self-review", "scientific-clarity-checker", "structural-review"], "select": "parallel-compare"},
+        {"role": "降 AI 率", "skills": ["cs-writing-anti-ai", "humanizer-academic-en", "stop-slop-skill", "skill-deslop"], "select": "menu"},
+        {"role": "投稿后", "skills": ["cs-post-acceptance"], "select": "single"}
+      ]
+    },
+    "nsfc-grant": {
+      "label": "NSFC 国自然标书撰写",
+      "trigger_phrases": ["NSFC", "国自然", "标书", "重点研发", "面上项目", "青年基金"],
+      "mode": "pipeline",
+      "steps": [
+        {"role": "立题筛选", "skills": ["cs-research-ideation", "research-proposal"], "select": "menu"},
+        {"role": "文献铺垫", "skills": ["big-papers-weekly-report", "preprint-tracker", "scholar-search"], "select": "parallel-compare"},
+        {"role": "Specific Aims", "skills": ["research-proposal", "grant-proposal-assistant"], "select": "menu"},
+        {"role": "撰写", "skills": ["manuscript", "scientific-writing"], "select": "menu"},
+        {"role": "Innovation 段", "skills": ["check-analogy-novelty", "negative-contrastive-framing"], "select": "single"},
+        {"role": "自审", "skills": ["cs-paper-self-review", "scientific-clarity-checker"], "select": "single"},
+        {"role": "降 AI", "skills": ["cs-writing-anti-ai", "humanize-chinese", "de-aigc-chinese"], "select": "menu"}
+      ]
+    },
+    "mr-analysis": {
+      "label": "孟德尔随机化全流程",
+      "trigger_phrases": ["孟德尔随机化", "MR 分析", "工具变量法", "two-sample MR", "TwoSampleMR"],
+      "mode": "pipeline",
+      "steps": [
+        {"role": "GWAS 数据", "skills": ["gwas-catalog-skill", "gwas-database", "openalex-database"], "select": "menu"},
+        {"role": "MR 主分析", "skills": ["bio-causal-genomics-mendelian-randomization"], "select": "single"},
+        {"role": "敏感性", "skills": ["bio-causal-genomics-pleiotropy-detection", "bio-causal-genomics-fine-mapping", "bio-causal-genomics-colocalization-analysis"], "select": "parallel-compare"},
+        {"role": "中介", "skills": ["bio-causal-genomics-mediation-analysis"], "select": "single"},
+        {"role": "流行病学报告", "skills": ["empirical-analysis-r"], "select": "single"},
+        {"role": "结果可视化", "skills": ["plot-survival", "plot-volcano", "scientific-visualization"], "select": "menu"},
+        {"role": "撰写报告", "skills": ["cs-results-report", "cs-results-analysis"], "select": "menu"}
+      ]
+    },
+    "systematic-review": {
+      "label": "系统综述/Meta 分析全流程",
+      "trigger_phrases": ["系统综述", "Meta 分析", "PRISMA", "systematic review"],
+      "mode": "pipeline",
+      "steps": [
+        {"role": "组织", "skills": ["survey-director"], "select": "single"},
+        {"role": "检索(英文)", "skills": ["scholar-search", "openalex-database", "pubmed-search", "literature-scout"], "select": "parallel-compare"},
+        {"role": "检索(中文)", "skills": ["cnki-search", "cnki-advanced-search"], "select": "menu"},
+        {"role": "筛选", "skills": ["sc-asreview-screening", "sc-systematic-review"], "select": "menu"},
+        {"role": "Meta 统计", "skills": ["sc-meta-analysis"], "select": "single"},
+        {"role": "引用核查", "skills": ["cs-citation-verification", "sc-fact-verification"], "select": "single"},
+        {"role": "撰写", "skills": ["survey-writer", "manuscript"], "select": "menu"}
+      ]
+    },
+    "obsidian-kb": {
+      "label": "Obsidian 知识库入库",
+      "trigger_phrases": ["Obsidian 入库", "知识库", "存进去", "vault"],
+      "mode": "pipeline",
+      "steps": [
+        {"role": "源清洗", "skills": ["cs-defuddle", "markitdown", "liteparse-skill"], "select": "menu"},
+        {"role": "入库", "skills": ["cs-obsidian-source-ingestion"], "select": "single"},
+        {"role": "Zotero 桥", "skills": ["cs-zotero-obsidian-bridge"], "select": "single"},
+        {"role": "文献流", "skills": ["cs-obsidian-literature-workflow"], "select": "single"},
+        {"role": "KB 制品", "skills": ["cs-obsidian-kb-artifacts"], "select": "single"},
+        {"role": "图谱化", "skills": ["infranodus", "knowledge-graph-construction"], "select": "menu"}
+      ]
+    },
+    "revise-respond": {
+      "label": "审稿返修 + Rebuttal",
+      "trigger_phrases": ["审稿意见", "返修", "rebuttal", "response to reviewer", "回复审稿人"],
+      "mode": "pipeline",
+      "steps": [
+        {"role": "起草响应", "skills": ["cs-review-response", "academic-letter-architect", "scientific-email-polishing"], "select": "parallel-compare"},
+        {"role": "格式化", "skills": ["write-review-artifact"], "select": "single"},
+        {"role": "对照修改稿", "skills": ["cs-paper-self-review", "scientific-manuscript-review"], "select": "menu"},
+        {"role": "引用补做", "skills": ["cs-citation-verification"], "select": "single"},
+        {"role": "降 AI", "skills": ["cs-writing-anti-ai", "humanize-chinese"], "select": "menu"},
+        {"role": "投递", "skills": ["cs-post-acceptance"], "select": "single"}
+      ]
+    },
+    "daily-radar": {
+      "label": "每日学术雷达",
+      "trigger_phrases": ["今天文献", "每日学术", "每日雷达", "晨报"],
+      "mode": "parallel-compare",
+      "steps": [
+        {"role": "并行抓取", "skills": ["cs-daily-paper-generator", "paper-digest-single", "cnki-journal-toc", "openalex-database", "preprint-tracker"], "select": "parallel-compare"},
+        {"role": "图谱分析", "skills": ["infranodus"], "select": "single"},
+        {"role": "周累积", "skills": ["big-papers-weekly-report"], "select": "single"}
+      ]
+    },
+    "r-empirical": {
+      "label": "R 8 步实证分析",
+      "trigger_phrases": ["R 实证", "双重差分", "断点回归", "DID 估计", "DID 设计", "regression discontinuity", "fixest", "tidyverse 回归", "Quarto report"],
+      "mode": "pipeline",
+      "steps": [
+        {"role": "主管线", "skills": ["empirical-analysis-r"], "select": "single"},
+        {"role": "图表", "skills": ["plot-box-violin", "plot-heatmap", "plot-scatter-bar", "plot-volcano", "publication-chart-skill"], "select": "menu"},
+        {"role": "结果报告", "skills": ["cs-results-report", "cs-results-analysis"], "select": "menu"}
+      ]
+    },
+    "skill-audit": {
+      "label": "Skill 系统月度自审",
+      "trigger_phrases": ["audit skill", "skill 系统自审", "审计 skill", "整理 skill"],
+      "mode": "pipeline",
+      "steps": [
+        {"role": "质量审", "skills": ["cs-skill-quality-reviewer", "design-evaluation-audit"], "select": "menu"},
+        {"role": "改写弱描述", "skills": ["cs-skill-improver", "meta-prompt-engineering"], "select": "menu"},
+        {"role": "重复识别", "skills": ["dedupe-against-corpus", "recommend-prune"], "select": "single"},
+        {"role": "重建索引", "tool": "python ~/.gemini/skills/_chains/_scripts/build_chains.py", "select": "tool"}
+      ]
+    }
+  }
+}
