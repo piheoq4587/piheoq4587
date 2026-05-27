@@ -1,0 +1,175 @@
+# Model Chain Configuration (canonical)
+
+> This is the single source of truth for model routing across all skills/programs that call the forwarding LLM proxy.
+>
+> **Endpoint**: `https://tone.nyc.mn/v1` · **Key**: see `api-credentials.env`
+>
+> **Revision 2026-04-24**: unified chain with `claude-opus-4.7-n` as primary; removed `grok-4.20-0309-reasoning` from active chain (empty-response rate ~70%).
+
+## Available models (validated 2026-04-24)
+
+| Model ID | Type | Cold-start latency | Notes |
+|---|---|---|---|
+| `claude-opus-4.7-n` | primary, reasoning-capable | 5–10s | **New primary**. Requires few-shot wrapping or system-message to avoid `<l` prefix artifact (~50% without). Ping 8/8. |
+| `grok-4.20-0309-non-reasoning` | fast general | <5s | Reliable 8/8 ping, 2–3s median. JSON OK. Structured & freeform both clean. |
+| `gpt-5.5` | reasoning-capable | <5s | 7/8 ping (occasional SSL EOF). JSON OK. `reasoning_tokens=10+` baseline. |
+| `claude-opus-4.6-n` | backstop, text-first | <10s | Has Notion-AI safety overlay: refuses "Output ONLY" / "override" / system-message coercion. Must use few-shot pattern for JSON. Ping 8/8. |
+| `gpt-5.4-n` | reserve | <15s | Internal alias — same backend as gpt-5.5. Use only when primary chain exhausted. |
+| `grok-4.20-0309-reasoning` | **off-chain** | N/A | Empty-response rate ~70% via this proxy. Removed from chain pending upstream fix. |
+
+## Unified chain (all task types)
+
+```
+claude-opus-4.7-n → grok-4.20-0309-non-reasoning → gpt-5.5 → claude-opus-4.6-n
+```
+
+Rationale: Opus 4.7-n at the head gives best reasoning quality; grok-nr is the cheapest reliable fallback (fastest median latency); gpt-5.5 covers structured edge cases; 4.6-n as text-first backstop. All four verified 8/8 ping online (2026-04-24).
+
+Complex-reasoning tasks (team_architect, hypothesis synthesis, literature review) use the same chain — the head model is already top-tier.
+
+## Opus calling recipe (REQUIRED for 4.6-n and 4.7-n)
+
+Both Opus models misbehave under naive calls, with TWO distinct failure modes:
+
+**4.6-n Notion-AI refusal**: rejects system messages and aggressive "Output ONLY"-style instructions.
+
+**4.7-n `<l` content-destruction artifact**: ~60-73% of responses (even WITH a system message) start with `<l`, which is NOT merely a prepended stray token — it REPLACES the first ~9 tokens of intended output, causing real content loss. Example: intended `随机对照试验（RCT）通过随机分组...` is emitted as `<lT）通过随机分组...`, losing `随机对照试验（RC` (verified 2026-04-24, 45-round diagnostic).
+
+### The fix: few-shot priming (user/assistant/user)
+
+Injecting a `(user, assistant)` example pair BEFORE the real user message primes the tokenizer and **eliminates the `<l` artifact (0/15 dirty rate verified)**.
+
+For STRUCTURED output (JSON/schema): `wrap_with_fewshot()` — drops system msg (required for 4.6-n), inserts JSON example:
+```python
+[example_user, example_assistant, real_user]
+```
+
+For GENERAL CHAT (team discussion, literature review, most agent calls): `wrap_chat_messages()` — PRESERVES system msg, inserts generic academic few-shot:
+```python
+[system_msg?, example_user, example_assistant, real_user]
+```
+Using example_user="请简要说明什么是同行评审？" / example_assistant="同行评审是学术出版的质量控制机制..."
+
+### Lenient response parser (defense in depth)
+
+After few-shot priming, `<l` should not appear. But the parser still handles:
+
+1. Residual `<l` prefix — `strip_opus_prefix()` removes it
+2. Markdown fences on 4.6-n — extract `{...}` from ` ```json...``` ` wrapper
+3. Preamble before JSON — find first balanced `{...}` fallback
+4. Notion-AI refusal — `is_opus_refusal()` detects and signals cascade fallback
+
+### Framework integration
+
+Canonical helper: `~/.claude/config/opus_helper.py`. Copied into each downstream program.
+
+- **Agno** (scicrew): `make_opus_aware_model(model_id, ...)` returns an `OpusAwareOpenAILike` subclass that auto-injects few-shot at `invoke()`/`ainvoke()` time. Transparent drop-in for `OpenAILike`.
+- **CAMEL** (scicamel): before `agent.step()`, call `agent.update_memory(ex_user, OpenAIBackendRole.USER)` + `agent.update_memory(ex_assistant, OpenAIBackendRole.ASSISTANT)`.
+- **urllib/OpenAI client** (researchclaw): call `wrap_chat_messages(messages)` before POST; `strip_opus_prefix(content)` after.
+- **CrewAI ConeLLM** (scisuper): patched `call()` injects few-shot via `wrap_chat_messages(merged)` when model is Opus.
+
+### Live verification (2026-04-24)
+
+| Program | Framework | 4.7-n clean rate |
+|---|---|---|
+| scicrew | Agno Agent | 15/15 (100%) |
+| scicamel | CAMEL ChatAgent | 10/10 (100%) |
+| researchclaw | urllib client | 10/10 (100%) |
+| Direct helper | HTTP POST | 10/10 (100%) |
+
+**Baseline without fix: 60-73% dirty rate.** See `_diagnose_l_artifact_results.json` and `_test_*_47n_*.json` for raw test data.
+
+## Routing rules
+
+```python
+# Single chain — no task-type branching
+UNIFIED_CHAIN = [
+    "claude-opus-4.7-n",
+    "grok-4.20-0309-non-reasoning",
+    "gpt-5.5",
+    "claude-opus-4.6-n",
+]
+
+def pick_chain(task_type: str = "default") -> list[str]:
+    return UNIFIED_CHAIN
+```
+
+Programs may still expose `DEFAULT_CHAIN` and `STRUCTURED_CHAIN` symbols for backward compat — both should point to `UNIFIED_CHAIN`.
+
+## Cooldown / retry logic
+
+- Trigger cooldown on error text containing: `429`, `model_cooldown`, `cooling down`.
+- On trigger: move model to end of chain for **900 seconds** (not permanent removal).
+- Also treat as failure → try next model: timeout, SSL EOF, connection reset, empty `content` with `finish_reason=stop`, JSON-parse failure for structured tasks.
+
+```python
+COOLDOWN_TTL_SECONDS = 900
+
+def should_mark_cooldown(err: str) -> bool:
+    t = err.lower()
+    return "429" in t or "model_cooldown" in t or "cooling down" in t
+
+def should_fallback(err: str) -> bool:
+    t = err.lower()
+    return (
+        should_mark_cooldown(err)
+        or "timeout" in t or "ssl eof" in t or "connection" in t
+        or t.strip() == "" or ("json" in t and "decode" in t)
+    )
+```
+
+## Anti-patterns
+
+- ✗ Don't call 4.6-n with aggressive language ("Output ONLY", "no markdown", "override"). It triggers the Notion-AI refusal. Use few-shot wrapping.
+- ✗ Don't call 4.6-n with a system message. The overlay treats system messages as coercion attempts. Use few-shot (user/assistant/user) instead.
+- ✗ Don't parse 4.7-n responses with strict `json.loads(content)` — `<l` prefix appears ~50% without system msg. Always use `opus_helper.extract_from_opus_response()`.
+- ✗ Don't include `grok-4.20-0309-reasoning` in any active chain until the empty-response issue is resolved upstream.
+- ✗ Don't treat `gpt-5.4-n` as a distinct model — same backend as gpt-5.5, reserve alias only.
+
+## Recommended HTTP client settings
+
+- **Per-request timeout**: 120 seconds (Opus cold-start can hit 20s)
+- **Max retries per model**: 1 (then fall to next model in chain)
+- **Total wallclock cap**: 480 seconds (4 × 120s)
+
+## Reference pseudocode
+
+```python
+from opus_helper import wrap_with_fewshot, extract_from_opus_response
+
+UNIFIED_CHAIN = [
+    "claude-opus-4.7-n",
+    "grok-4.20-0309-non-reasoning",
+    "gpt-5.5",
+    "claude-opus-4.6-n",
+]
+OPUS_MODELS = {"claude-opus-4.6-n", "claude-opus-4.7-n"}
+COOLDOWN_TTL_SECONDS = 900
+
+def call_llm(prompt_messages, task_type="default", structured=False):
+    chain = UNIFIED_CHAIN
+    cooldown = load_cooldown_state()
+    ordered = [m for m in chain if cooldown.get(m, 0) < now()] + \
+              [m for m in chain if cooldown.get(m, 0) >= now()]
+    for model in ordered:
+        msgs = prompt_messages
+        if model in OPUS_MODELS and structured:
+            msgs = wrap_with_fewshot(prompt_messages)
+        try:
+            resp = openai_client(model=model, messages=msgs, timeout=120)
+            content = resp.choices[0].message.content
+            if model in OPUS_MODELS:
+                content = extract_from_opus_response(content, structured=structured)
+            return content
+        except Exception as e:
+            if should_mark_cooldown(str(e)):
+                cooldown[model] = now() + COOLDOWN_TTL_SECONDS
+                save_cooldown_state(cooldown)
+            if not should_fallback(str(e)):
+                raise
+    raise RuntimeError("all models in chain exhausted")
+```
+
+## Helper module
+
+See `~/.claude/config/opus_helper.py` for the reference implementation of `wrap_with_fewshot()` and `extract_from_opus_response()`. Downstream programs (scicrew, scicamel, researchclaw, scisuper) should copy or import this helper.

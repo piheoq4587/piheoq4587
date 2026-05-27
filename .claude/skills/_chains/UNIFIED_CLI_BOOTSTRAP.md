@@ -1,0 +1,241 @@
+---
+name: Unified CLI Bootstrap (5-CLI 共用入口)
+version: 1.0
+created: 2026-05-23
+canonical: ~/.gemini/skills/_chains/UNIFIED_CLI_BOOTSTRAP.md
+applies-to: Claude Code / Codex / Gemini / GitHub Copilot / Factory AI
+junction-targets: ~/.claude/skills/_chains/ / ~/.codex/skills/_chains/ / ~/.copilot/skills/_chains/ / ~/.gemini/skills/_chains/
+---
+
+# Unified CLI Bootstrap
+
+**所有 5 CLI（Claude Code / Codex / Gemini / Copilot / Factory）共用同一套系统。**
+
+每个 CLI 启动时，agent personality 文件（CLAUDE.md / AGENTS.md / GEMINI.md）都包含一行：
+```
+Always read ~/.<cli>/skills/_chains/UNIFIED_CLI_BOOTSTRAP.md at session start.
+```
+
+本文件是**唯一信息源**——任何更新只改这里一份。
+
+---
+
+## 一、记忆（Memory）— 必读
+
+**主入口**: `~/.claude/projects/C--Users-Administrator/memory/MEMORY.md`
+
+跨 CLI 同步路径（所有 5 CLI 都读这同一份）：
+```
+~/.claude/projects/C--Users-Administrator/memory/
+├── MEMORY.md                          ← 索引文件，所有 entry 都从这开始
+├── feedback_*.md                      ← 用户偏好/工作风格
+├── project_*.md                       ← 项目特定知识
+├── reference_*.md                     ← 技术参考（API/模型链/路由系统）
+├── user_*.md                          ← 用户个人档案
+└── wisdom/                            ← 道智库本体
+    ├── INDEX.md
+    └── wisdom-*.md
+```
+
+**读取规则**：
+- 任务开始前**必读** `MEMORY.md`（≤200 字索引）
+- 索引行命中相关主题 → 读对应 `feedback_/project_/reference_*.md`
+- 涉及决策/原则/智慧 → 读 `wisdom/INDEX.md`
+
+---
+
+## 二、Skill + MCP 调用系统
+
+### 2.1 Funnel 一键命令
+```bash
+python ~/.gemini/skills/_chains/_scripts/skill_route.py "<自然语言任务>"
+```
+
+输出 5 层候选：
+- Layer 1: detected domains
+- Layer 2-3: 候选 chains
+- Layer 4: pipeline match
+- Layer 5a: recommended skills
+- Layer 5b: MCP + Skill registry（并发候选）
+- Layer 5c: 道智库建议（仅决策类）
+
+### 2.2 强制路由协议
+完整版：`~/.gemini/skills/_chains/SKILL_INVOCATION_PROTOCOL_v1.md`
+便携版（drop-in）：`~/.gemini/skills/_chains/HIERARCHY_PROTOCOL_PORTABLE.md`
+
+**核心规则**：
+- 任何非平凡任务（≥2 步骤 / 跨域 / 工具选择不明）→ 强制走 funnel
+- 单查询 / 用户已明示工具 / 纯执行 → 跳过 funnel 直接做
+
+### 2.3 多 MCP 并发触发
+
+`~/.gemini/skills/_chains/MCP_REGISTRY.md` 列出 9 个 domain + 15 个 tag 的 MCP 群集。
+
+**默认并发 = 2**（v4.1 新规则）：
+- query confidence ≥ 0.7 + 单候选明显 → single skill
+- **其他情况 → 默认 fire top-2 candidates 并发对比**（不再是 top-3）
+- query 含"对比/比较/都跑/全面" → fire top-5+
+- Tier-S trivial → single
+
+`auto_parallel_mode()` 在 skill_route.py 自动判定。
+
+### 2.4 Funnel v1.2 强制报告（2026-05-23 新增）
+
+**每个任务都要走 funnel + 给报告**，分 3 档：
+
+| Tier | 适用 | 输出格式 |
+|---|---|---|
+| **Tier-S** | 简单 / meta / 单步 | 1 行 `[Funnel] tier=S \| domain=X \| skill=Y \| mode=Z \| reason=...` |
+| **Tier-M** | 中等（2-4 步、跨 1-2 域） | 完整模板（候选 list + 选定理由 + 执行计划） |
+| **Tier-L** | 重型（≥5 步、≥3 域、需后台） | 完整模板 + spawn orchestrator |
+
+**自动执行模式**（auto_parallel_mode 同时输出）：direct / router / orchestrator / parallel / multi-agent。
+
+**免 funnel 仅 2 例外**：
+1. 用户当前 turn 明示"快直接 / 不走 funnel"
+2. 纯对话回应（无产出）
+
+> **CLI 适配**：Claude Code 通过 CLAUDE.md hooks 强制；Codex/Copilot/Gemini/Factory 通过本 bootstrap 引用强制，效果等价。
+
+### 2.5 文献检索强制三路 ensemble（2026-05-23 起 ALWAYS-ON）
+
+用户说"查文献 / 搜论文 / 找文献 / 综述 / 调研 / literature search"且未点名工具时——**默认并行三路**：
+
+1. **Semantic Scholar**（`sc-citation-analysis` skill 或 `tooluniverse-literature` 的 semantic_scholar）
+2. **OpenAlex**（`openalex-database` skill 或 `tooluniverse-literature` 的 openalex）
+3. **WOS Starter**（`wos-starter-search` skill，Clarivate 权威收录身份）
+
+完成后 DOI/title 去重 + 输出 hit table 标注每条在 3 个源的命中状态 + 收录身份（SCIE/SSCI/AHCI/ESCI）。
+
+**跳过 ensemble 仅 6 种情形**：
+1. 用户点名单源（"用 S2" / "只用 PubMed"）
+2. 单条 DOI/PMID/UID lookup
+3. 中文期刊（→ `cnki-*`）
+4. 引文链追踪
+5. SCI 收录核验（直接用 wos-starter-search）
+6. Exa 语义搜索
+
+> Phase 1 (Discovery) 默认三路，Phase 4 (Cross-Verify) 用 WOS 再确认关键论文 SCI 身份。
+
+---
+
+## 三、道术 + 道智 双库
+
+| | 道术 (daoshu) | 道智 (daozhi) |
+|---|---|---|
+| 蒸馏对象 | 古文典籍 / 思想资料 | 论文 / 案例 / 决策 / 经验 / 心智模型 |
+| 输出 | `~/.gemini/skills/dao-{name}/` skill 包 | `wisdom-*.md` 单条 |
+| 已有 | 4 个（laozi / junshi-M / sushu / yinfujing） | 11 条 |
+| 主入口 | `daoshu` skill | `daozhi` skill |
+| 蒸馏 | `daoshu` Phase D | `daozhi-distill` |
+| 检索 | `daoshu` Phase A | `daozhi-search` |
+| 应用 | `daoshu` Phase A | `daozhi-apply` |
+
+### 触发场景（5 CLI 都用同一套）
+
+**用户说"蒸馏这段"**：
+- 古文（《》/曰/之乎也者）→ 走 daoshu Phase D，输出 dao-* 子 skill
+- 现代（论文/英文/案例）→ 走 daozhi-distill，输出 wisdom-*.md
+- 实时 backup watcher 自动 30 秒内同步到 OneDrive
+
+**用户提问含决策/智慧关键词**：
+- skill_route.py 的 Layer 5c 自动推 top-5 道智候选
+- 用户可选"用 X 分析" / "全部对比"（多 wisdom synthesis） / "跳过"
+
+**触发词集合**：
+- 「道」「术」「智」「智慧」「法」「本质」「原则」「架构」「思路」
+- 「怎么办」「怎么处理」「该怎么做」「如何决定」「决策」「决定」
+- "decision" / "principle" / "framework" / "approach" / "mental model"
+
+---
+
+## 四、自动备份 + 复刻
+
+### 4.1 OneDrive 备份目录
+`C:\Users\Administrator\OneDrive\备份skill及道智\`
+
+含 skills/ + daoshu-distilled/ + mcp-configs/ (4 CLI) + memory-v2/ + credentials-full/ (明文 API key) + routing-system/ + restore.ps1。
+
+### 4.2 实时 watcher
+FileSystemWatcher 监听 8 路径，文件改动 30s 后自动备份。
+- Scheduled Task `Daozhi_Realtime_Watcher`（logon 启动）
+- Scheduled Task `Daozhi_Watcher_Healthcheck`（每 30min 重启死掉的 watcher）
+- Scheduled Task `Daozhi_Backup_Daily`（logon+10min + Sunday 02:00 兜底）
+
+### 4.3 新机器复刻
+```powershell
+cd ~/OneDrive/备份skill及道智
+powershell -ExecutionPolicy Bypass -File restore.ps1
+```
+
+---
+
+## 五、API key + MCP 配置
+
+- 主源：`~/.claude/config/api-credentials.env`（用户填的真实 key）
+- 备份：`OneDrive\备份skill及道智\credentials-full\api-credentials.env`（明文）
+- Mirror：`~/.gemini/skills/daoshu/references/api-credentials.env`（道术里也有，符合 v4 设计）
+
+5 CLI 都用同一份 key 文件。新装机 restore.ps1 自动从 OneDrive 拷过来。
+
+---
+
+## 六、5 CLI 差异说明
+
+| CLI | personality 文件 | skill 路径 | filesystem MCP | 状态 |
+|---|---|---|---|---|
+| Claude Code | `~/.claude/CLAUDE.md` | `~/.claude/skills/` (junction) | 17 MCPs 配在 `~/.claude.json` | ✅ Full |
+| Codex | `~/.codex/AGENTS.md` | `~/.codex/skills/` (junction) | 看 `~/.codex/config.toml` | ✅ Full |
+| Gemini | `~/.gemini/GEMINI.md` | `~/.gemini/skills/` (canonical) | 看 `~/.gemini/extensions/` | ✅ Full |
+| Copilot | `~/.copilot/AGENTS.md` (v4.1 新建) | `~/.copilot/skills/` (junction) | 看 `~/.copilot/mcp-config.json` | ✅ Full |
+| Factory | `~/.factory/AGENTS.md` | n/a (cloud) | n/a | ⚠ Partial（无 filesystem skill）|
+| FlowwithOS | n/a (cloud) | n/a | n/a | ❌ 仅 chat copy-paste 提示 |
+
+### Flowith / Factory AI cheatsheet
+对于 cloud-only 的 CLI（Flowith / Factory），用户每次开会话时可粘贴这段引导：
+
+```
+请按以下系统工作：
+1. 查 MEMORY.md (本地 ~/.claude/projects/.../memory/MEMORY.md) 找上下文
+2. 走 funnel: python ~/.gemini/skills/_chains/_scripts/skill_route.py "<我的任务>"
+3. 多源情况下默认 fire top-2 候选并发对比
+4. 决策类问题查 wisdom/INDEX.md
+5. 蒸馏新智慧用 daozhi-distill 或 daoshu
+```
+
+---
+
+## 七、跨 CLI 操作快速参考
+
+### 任何 CLI 里跑这些（路径全部 portable）
+
+```bash
+# 路由查询
+python ~/.gemini/skills/_chains/_scripts/skill_route.py "<任务>"
+
+# 精筛某 chain top-5
+python ~/.gemini/skills/_chains/_scripts/chain_select.py <chain-name> "<query>"
+
+# 记一笔使用日志（让 skill"变聪明"）
+python ~/.gemini/skills/_chains/_scripts/log_usage.py <skill-name> --rating good --task "<短描述>"
+
+# 手动备份
+powershell -ExecutionPolicy Bypass -Command "$env:BACKUP_DAOZHI='C:\Users\Administrator\OneDrive\备份skill及道智'; & 'C:\Users\Administrator\.claude\scripts\backup-daozhi.ps1'"
+
+# 启动实时 watcher（如果死了）
+powershell -ExecutionPolicy Bypass -File ~/.claude/scripts/realtime-backup-watcher.ps1
+
+# 重建 chain 索引（装新 skill 后）
+python ~/.gemini/skills/_chains/_scripts/build_chains.py
+
+# 跨 CLI junction propagate
+powershell -File ~/.gemini/skills/_chains/_scripts/junction_all.ps1
+```
+
+---
+
+## 八、版本历史
+
+- **v1.0 (2026-05-23)**: 首版，5 CLI 统一引导
+- **v1.1 (2026-05-23)**: 加 §2.4 Funnel v1.2 Tier-S/M/L 强制报告 + §2.5 文献检索强制三路 ensemble（S2 + OpenAlex + WOS Starter）。Copilot mcp-config.json 同步加 scite/infranodus/firecrawl 3 个 MCP。
+- 后续更新仅改本文件，所有 CLI 自动同步（junction 机制）

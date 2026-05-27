@@ -1,0 +1,40 @@
+{
+  "mcpServers": {
+    "agentmemory": {
+      "command": "agentmemory",
+      "args": [
+        "mcp"
+      ]
+    },
+    "gitnexus": {
+      "command": "C:\\Users\\Administrator\\.claude\\scripts\\gitnexus-mcp-wrapper.cmd",
+      "args": [
+        "mcp"
+      ]
+    },
+    "prompts-chat": {
+      "type": "http",
+      "url": "https://prompts.chat/api/mcp"
+    },
+    "scite": {
+      "command": "C:\\Users\\Administrator\\.claude\\scripts\\scite-mcp-wrapper.cmd",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://api.scite.ai/mcp"
+      ]
+    },
+    "infranodus": {
+      "command": "C:\\Users\\Administrator\\.claude\\scripts\\infranodus-mcp-wrapper.cmd"
+    },
+    "firecrawl": {
+      "command": "C:\\Users\\Administrator\\.claude\\scripts\\firecrawl-mcp-wrapper.cmd"
+    },
+    "gbrain": {
+      "command": "gbrain",
+      "args": [
+        "serve"
+      ]
+    }
+  }
+}

@@ -1,0 +1,20 @@
+[
+  {
+    "test": "tool_capable",
+    "status": "FAIL",
+    "error": "All models in chain 'tool_capable' failed. Last error: grok-4.20-0309-reasoning: empty response"
+  },
+  {
+    "test": "stable_json",
+    "status": "PASS",
+    "len": 47,
+    "snippet": "{\"status\":\"ok\",\"model_policy\":\"5.5-n disabled\"}",
+    "parses": true
+  },
+  {
+    "test": "fast_cheap",
+    "status": "PASS",
+    "len": 3,
+    "snippet": "ACK"
+  }
+]
