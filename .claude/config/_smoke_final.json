@@ -1,0 +1,91 @@
+{
+  "endpoint": {
+    "base_url": "https://tone.nyc.mn/v1",
+    "key_set": true
+  },
+  "roles": {
+    "default": [
+      "claude-opus-4.7-n",
+      "gpt-5.5-n",
+      "gemini-3.1-pro-n",
+      "claude-opus-4.6-n",
+      "grok-4.20-0309-non-reasoning"
+    ],
+    "tool_capable": [
+      "grok-4.20-0309-non-reasoning",
+      "grok-4.20-0309-reasoning"
+    ],
+    "synthesis": [
+      "claude-opus-4.7-n",
+      "gpt-5.5-n",
+      "gemini-3.1-pro-n",
+      "claude-opus-4.6-n",
+      "grok-4.20-0309-reasoning"
+    ],
+    "fast_cheap": [
+      "grok-4.20-0309-non-reasoning",
+      "gpt-5.5-n",
+      "gemini-3.1-pro-n"
+    ],
+    "deep_reasoning_small": [
+      "claude-opus-4.7-n",
+      "gpt-5.5-n",
+      "gemini-3.1-pro-n",
+      "grok-4.20-0309-reasoning",
+      "claude-opus-4.6-n"
+    ],
+    "stable_json": [
+      "claude-opus-4.7-n",
+      "gpt-5.5-n",
+      "gemini-3.1-pro-n",
+      "grok-4.20-0309-reasoning",
+      "claude-opus-4.6-n",
+      "grok-4.20-0309-non-reasoning"
+    ],
+    "cross_check": [
+      "gpt-5.5-n",
+      "gemini-3.1-pro-n",
+      "grok-4.20-0309-reasoning",
+      "claude-opus-4.6-n"
+    ],
+    "lead_synthesis": [
+      "claude-opus-4.7-n",
+      "gpt-5.5-n",
+      "gemini-3.1-pro-n",
+      "claude-opus-4.6-n"
+    ],
+    "emergency_sonnet": [
+      "claude-sonnet-4.6-n",
+      "gpt-5.5-n",
+      "grok-4.20-0309-non-reasoning"
+    ]
+  },
+  "default": {
+    "status": "PASS",
+    "t_s": 26.3,
+    "snippet": "OK"
+  },
+  "synthesis": {
+    "status": "PASS",
+    "t_s": 12.8,
+    "len": 131,
+    "snippet": "Mitochondria are the cell's powerhouses, generating ATP energy through cellular respiration to fuel essential biological"
+  },
+  "tool_capable": {
+    "status": "PASS",
+    "t_s": 7.5,
+    "has_tool_calls": true,
+    "snippet": "{\"tool_calls\": [{\"id\": \"call_1778068548395ce27b4\", \"type\": \"function\", \"function\": {\"name\": \"echo_task\", \"arguments\": \"{\\\"text\\\":\\\"router OK\\\"}\"}}], \"content\": "
+  },
+  "stable_json": {
+    "status": "PASS",
+    "t_s": 12.2,
+    "parses": true,
+    "snippet": "{\"migration_status\":\"ok\"}"
+  },
+  "disabled_skip_check": {
+    "gpt-5.5_in_any_chain": true,
+    "gpt-5.4_in_any_chain": false,
+    "gpt-5.2_in_any_chain": false
+  }
+}

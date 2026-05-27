@@ -1,0 +1,51 @@
+{
+  "env": {
+    "SERPBASE_API_KEY": "sk-51530814747766d33d87a27921c3aa60104bcc42c8a33145",
+    "SERPBASE_API_KEY_2": "sk-058a03695d8147d8887465973f90feb0a4604f746fafdf8f",
+    "SERPBASE_BASE_URL": "https://api.serpbase.dev"
+  },
+  "model": "sonnet-4-5-20250929[1m]",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Grep|Glob|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"C:/Users/Administrator/.claude/hooks/gitnexus/gitnexus-hook.cjs\"",
+            "timeout": 10,
+            "statusMessage": "Enriching with GitNexus graph context..."
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"C:/Users/Administrator/.claude/hooks/gitnexus/gitnexus-hook.cjs\"",
+            "timeout": 10,
+            "statusMessage": "Checking GitNexus index freshness..."
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "cols=$(stty size </dev/tty 2>/dev/null | awk '{print $2}'); export COLUMNS=$(( ${cols:-120} > 4 ? ${cols:-120} - 4 : 1 )); exec \"/c/Users/Administrator/.nvm/versions/node/v22.19.0/bin/node\" \"/c/Users/Administrator/.claude/plugins/claude-hud/dist/index.js\""
+  },
+  "enabledPlugins": {
+    "codex@openai-codex": true
+  },
+  "extraKnownMarketplaces": {
+    "openai-codex": {
+      "source": {
+        "source": "github",
+        "repo": "openai/codex-plugin-cc"
+      }
+    }
+  }
+}
