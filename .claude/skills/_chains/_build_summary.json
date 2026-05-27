@@ -1,0 +1,88 @@
+{
+  "total_skills_scanned": 957,
+  "classified": 920,
+  "unclassified": 37,
+  "unclassified_list_first50": [
+    "endpoint-definition-designer",
+    "evidence-level-ranker",
+    "experiment-audit",
+    "figure-spec",
+    "follow-builders",
+    "inclusion-exclusion-criteria-builder",
+    "invention-structuring",
+    "kill-argument",
+    "mechanism-to-validation-planner",
+    "medical-english-precision-editor",
+    "medical-research-gap-finder",
+    "medical-topic-saturation-and-whitespace-checker",
+    "method-gap-detector",
+    "multi-omics-clinical-integration-planner",
+    "overleaf-sync",
+    "paper-claim-audit",
+    "paper-to-claim-verifier",
+    "population-gap-detector",
+    "ppt-master",
+    "prior-art-search",
+    "reference-integrity-checker",
+    "repomix-bundle",
+    "reporting-guideline-compliance-checker",
+    "research-wiki",
+    "resubmit-pipeline",
+    "result-reliability-checker",
+    "result-to-claim",
+    "sample-size-and-power-planning-assistant",
+    "skill-auditor",
+    "slides-polish",
+    "swyx-observability-hardening",
+    "swyx-release-readiness-hardening",
+    "swyx-security-hardening",
+    "swyx-test-strategy-hardening",
+    "translational-study-blueprint",
+    "unmet-clinical-need-extractor",
+    "validation-strategy-designer"
+  ],
+  "tags_with_members": 176,
+  "domains_active": 14,
+  "top10_largest_chains": [
+    [
+      "clinic:precision-medicine",
+      98
+    ],
+    [
+      "bio:variant-annotation",
+      84
+    ],
+    [
+      "ds:python-scientific",
+      57
+    ],
+    [
+      "ds:python-pandas",
+      39
+    ],
+    [
+      "lit:literature-scout-multi",
+      38
+    ],
+    [
+      "paper:tables-figures",
+      37
+    ],
+    [
+      "bio:protein-structure",
+      34
+    ],
+    [
+      "bio:single-cell-rna",
+      33
+    ],
+    [
+      "eng:devops-infra",
+      31
+    ],
+    [
+      "clinic:oncology",
+      30
+    ]
+  ]
+}

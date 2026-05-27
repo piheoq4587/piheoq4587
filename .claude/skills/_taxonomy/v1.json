@@ -1,0 +1,175 @@
+{
+  "version": "1.0",
+  "generated": "2026-05-07",
+  "design_principles": [
+    "fine-grained: a skill SHOULD have 3-7 tags",
+    "domain-prefix: tag = '<domain>:<subdomain>' for fast scoping",
+    "chains derived: chain views auto-generated from skill tags",
+    "menu invocation: chain returns member list, user picks 1 or compare"
+  ],
+  "domains": {
+    "bio": {
+      "label": "Bioinformatics",
+      "tags": [
+        "bio:ngs-alignment", "bio:variant-calling", "bio:variant-annotation",
+        "bio:single-cell-rna", "bio:single-cell-atac", "bio:single-cell-multiome", "bio:single-cell-perturb",
+        "bio:bulk-rna-seq", "bio:bulk-atac-seq", "bio:bulk-chip-seq", "bio:bulk-clip-seq",
+        "bio:methylation-wgbs", "bio:hi-c-3d-genome",
+        "bio:proteomics", "bio:metabolomics", "bio:lipidomics",
+        "bio:imaging-genomics", "bio:radiomics",
+        "bio:liquid-biopsy-cfdna", "bio:liquid-biopsy-ctdna",
+        "bio:hla-typing", "bio:tmb-msi", "bio:somatic-signatures",
+        "bio:mr-causal-genomics", "bio:fine-mapping", "bio:colocalization", "bio:mediation-genomics", "bio:pleiotropy",
+        "bio:gwas-pheno", "bio:multi-omics-integration",
+        "bio:microbiome",
+        "bio:protein-structure", "bio:protein-design", "bio:antibody-design", "bio:aav-design", "bio:cart-design",
+        "bio:pathway-enrichment", "bio:gene-set-analysis",
+        "bio:cell-type-annotation", "bio:tcr-bcr-immune"
+      ]
+    },
+    "clinic": {
+      "label": "Clinical Medicine",
+      "tags": [
+        "clinic:cardiovascular", "clinic:oncology", "clinic:icu-sepsis",
+        "clinic:orthopedics-spine", "clinic:imaging-radiology", "clinic:pathology",
+        "clinic:neurology", "clinic:nephrology", "clinic:hepatology",
+        "clinic:rare-disease", "clinic:precision-medicine",
+        "clinic:pharmacovigilance", "clinic:drug-interaction", "clinic:adr-prediction",
+        "clinic:clinical-decision-support", "clinic:clinical-trial-design",
+        "clinic:guidelines-evidence", "clinic:irb-ethics",
+        "clinic:clinical-writing"
+      ]
+    },
+    "stat": {
+      "label": "Statistics & Causal Inference",
+      "tags": [
+        "stat:regression-econometrics", "stat:fixed-effects-panel",
+        "stat:causal-did-rd", "stat:causal-iv", "stat:causal-synth-control",
+        "stat:causal-matching", "stat:causal-mediation",
+        "stat:bayesian-stats", "stat:survival-analysis",
+        "stat:meta-analysis-stats", "stat:multilevel-mixed",
+        "stat:dml-grf-bart-ml-causal", "stat:rdd",
+        "stat:tmle-target-trial", "stat:e-value-sensitivity",
+        "stat:bias-assessment"
+      ]
+    },
+    "ds": {
+      "label": "Data Science Tools",
+      "tags": [
+        "ds:python-pandas", "ds:python-statsmodels", "ds:python-sklearn", "ds:python-scientific",
+        "ds:r-tidyverse", "ds:r-fixest", "ds:r-quarto",
+        "ds:stata-do", "ds:matlab",
+        "ds:viz-matplotlib", "ds:viz-ggplot", "ds:viz-plotly", "ds:viz-altair",
+        "ds:notebook-jupyter", "ds:notebook-quarto-rmd",
+        "ds:kaggle-competition", "ds:autoba-autopilot"
+      ]
+    },
+    "lit": {
+      "label": "Literature & Discovery",
+      "tags": [
+        "lit:cnki-chinese", "lit:openalex", "lit:semantic-scholar",
+        "lit:pubmed-europepmc", "lit:arxiv-biorxiv-medrxiv",
+        "lit:scite-citation", "lit:google-scholar",
+        "lit:preprint-tracker", "lit:daily-radar",
+        "lit:literature-scout-multi", "lit:citation-verify",
+        "lit:zotero-mendeley", "lit:journal-radar",
+        "lit:multi-source-search", "lit:asta-mcp",
+        "lit:wos-clarivate"
+      ]
+    },
+    "paper": {
+      "label": "Paper Lifecycle",
+      "tags": [
+        "paper:ideation-question", "paper:protocol-design",
+        "paper:writing-intro", "paper:writing-methods",
+        "paper:writing-results", "paper:writing-discussion",
+        "paper:tables-figures", "paper:references-citation",
+        "paper:self-review", "paper:reviewer-response",
+        "paper:revision-rebuttal", "paper:post-acceptance",
+        "paper:journal-target-match", "paper:tim-submission",
+        "paper:meta-analysis", "paper:ip-patent",
+        "paper:nature-submission", "paper:ml-figures",
+        "paper:workbench"
+      ]
+    },
+    "antiAI": {
+      "label": "AI Writing Detection & Humanization",
+      "tags": [
+        "antiAI:detect-aigc", "antiAI:humanize-en", "antiAI:humanize-zh",
+        "antiAI:deslop", "antiAI:stop-slop",
+        "antiAI:revision-guard", "antiAI:academic-humanizer"
+      ]
+    },
+    "grant": {
+      "label": "Grants & Proposals",
+      "tags": [
+        "grant:nsfc-cn", "grant:nih-r01", "grant:erc-eu",
+        "grant:research-proposal", "grant:budget-justify",
+        "grant:innovation-statement", "grant:reviewer-perspective",
+        "grant:specific-aims"
+      ]
+    },
+    "km": {
+      "label": "Knowledge Management",
+      "tags": [
+        "km:obsidian-vault", "km:obsidian-zotero-bridge", "km:obsidian-defuddle",
+        "km:obsidian-source-ingest", "km:obsidian-literature-flow", "km:obsidian-kb-artifacts",
+        "km:infranodus-graph", "km:cognee-graph",
+        "km:memory-distill", "km:knowledge-graph-construction",
+        "km:tag-by-topic", "km:retrieval-rag", "km:graphrag-system"
+      ]
+    },
+    "eng": {
+      "label": "Software Engineering",
+      "tags": [
+        "eng:daily-coding", "eng:code-review", "eng:bug-debug",
+        "eng:test-automation", "eng:tdd-verification",
+        "eng:architecture-design", "eng:refactoring",
+        "eng:git-workflow", "eng:ci-cd",
+        "eng:performance-profiling", "eng:security-audit",
+        "eng:api-design", "eng:webapp-testing", "eng:frontend-design",
+        "eng:devops-infra", "eng:database-design",
+        "eng:cli-tooling", "eng:python-pkg-mgmt"
+      ]
+    },
+    "vis": {
+      "label": "Visual Design & Communication",
+      "tags": [
+        "vis:slides-pptx", "vis:slides-html", "vis:slides-marp", "vis:slides-scientific",
+        "vis:posters-academic", "vis:posters-design",
+        "vis:diagrams-mermaid", "vis:diagrams-drawio",
+        "vis:infographic", "vis:web-landing",
+        "vis:brand-style", "vis:alt-text-accessibility",
+        "vis:figure-publication"
+      ]
+    },
+    "meta": {
+      "label": "Skill System Meta",
+      "tags": [
+        "meta:skill-create", "meta:skill-improve", "meta:skill-audit",
+        "meta:hook-dev", "meta:mcp-dev", "meta:plugin-dev",
+        "meta:command-dev", "meta:agent-identifier"
+      ]
+    },
+    "think": {
+      "label": "Decision & Reasoning",
+      "tags": [
+        "think:decision-matrix", "think:premortem-postmortem",
+        "think:bayesian-reasoning", "think:fermi-estimation",
+        "think:scout-mindset", "think:dialectical-mapping",
+        "think:steelman-redteam", "think:reference-class-forecast",
+        "think:morphological-triz", "think:analogy-mapping",
+        "think:counterfactual-hypothetical", "think:systems-leverage",
+        "think:deliberation-debate"
+      ]
+    },
+    "dao": {
+      "label": "Yixue & Daoshu (东方系统论)",
+      "tags": [
+        "dao:yixue-systemology", "dao:bazi-reading",
+        "dao:dao-distillation", "dao:tim-yixue-bridge",
+        "dao:five-elements", "dao:laozi-text"
+      ]
+    }
+  }
+}

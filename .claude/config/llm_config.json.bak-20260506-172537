@@ -1,0 +1,66 @@
+{
+  "_comment": "Central LLM routing config. Edit THIS FILE ONLY when models, chains, or endpoints change. All Skills/MCPs/programs read this via llm_router.py.",
+  "_last_updated": "2026-04-25",
+
+  "endpoint": {
+    "_comment": "Endpoint URL and API key are read from environment variables loaded from ~/.claude/config/api-credentials.env",
+    "base_url_env": "OPENAI_API_BASE",
+    "api_key_env": "OPENAI_API_KEY",
+    "default_base_url": "https://tone.nyc.mn/v1"
+  },
+
+  "models": {
+    "gpt-5.5": {
+      "supports_tools": true,
+      "needs_fewshot": false,
+      "max_prompt_kb": 200,
+      "notes": "Primary tool-capable model. Tested 14s on 14KB+tool prompt, 10s on 15KB no-tool synth."
+    },
+    "grok-4.20-0309-non-reasoning": {
+      "supports_tools": true,
+      "needs_fewshot": false,
+      "max_prompt_kb": 200,
+      "notes": "Reliable secondary. Tested 17-22s across all SciCrew scenarios."
+    },
+    "gpt-5.4-mini": {
+      "supports_tools": true,
+      "needs_fewshot": false,
+      "max_prompt_kb": 100,
+      "notes": "Fastest fallback (4.6s ping). Lightweight model, smaller context."
+    },
+    "claude-opus-4.7-n": {
+      "supports_tools": false,
+      "needs_fewshot": true,
+      "max_prompt_kb": 5,
+      "notes": "Notion-AI overlay rejects tool schema. <l artifact requires few-shot wrap. Boundary: prompt<=5KB."
+    },
+    "claude-opus-4.6-n": {
+      "supports_tools": false,
+      "needs_fewshot": true,
+      "max_prompt_kb": 5,
+      "notes": "Same Notion-AI overlay as 4.7-n. Cannot call tools."
+    }
+  },
+
+  "roles": {
+    "_comment": "Callers should use ROLE NAMES, not model names directly. Each role lists models in fallback order (head = primary, rest = fallback). Cooldown logic moves cooled models to tail at runtime.",
+
+    "default": ["gpt-5.5", "grok-4.20-0309-non-reasoning", "gpt-5.4-mini"],
+
+    "tool_capable": ["gpt-5.5", "grok-4.20-0309-non-reasoning", "gpt-5.4-mini"],
+
+    "synthesis": ["gpt-5.5", "grok-4.20-0309-non-reasoning", "gpt-5.4-mini"],
+
+    "fast_cheap": ["gpt-5.4-mini", "grok-4.20-0309-non-reasoning", "gpt-5.5"],
+
+    "deep_reasoning_small": ["claude-opus-4.7-n", "claude-opus-4.6-n", "gpt-5.5"]
+  },
+
+  "policies": {
+    "cooldown_ttl_seconds": 900,
+    "request_timeout_seconds": 120,
+    "max_retries_per_model": 1,
+    "agent_timeout_base_seconds": 600,
+    "agent_timeout_max_seconds": 1800
+  }
+}
