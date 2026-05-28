@@ -1,0 +1,27 @@
+name: 获取 Telegram chat_id（一次性）
+
+# 用法：先在 Telegram 给机器人发一条消息，然后到 Actions 页面手动运行本工作流，
+# 在运行日志里查看你的 chat_id，再把它填到仓库 Secret: TELEGRAM_CHAT_ID。
+
+on:
+  workflow_dispatch:
+
+jobs:
+  get-chat-id:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+
+      - name: 查询 chat_id
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: python scripts/get_chat_id.py
