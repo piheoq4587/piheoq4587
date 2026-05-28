@@ -1,0 +1,29 @@
+name: 每日科研AI资讯推送
+
+on:
+  schedule:
+    # UTC 00:00 = 北京时间 08:00。如需改时间，调整下面的 cron（用 UTC）。
+    - cron: "0 0 * * *"
+  workflow_dispatch:  # 允许在 Actions 页面手动点击运行
+
+jobs:
+  push-news:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 安装依赖
+        run: pip install -r requirements.txt
+
+      - name: 收集并推送资讯
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+        run: python scripts/main.py
